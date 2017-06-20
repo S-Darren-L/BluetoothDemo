@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">BluetoothDemo</string>
+    <string name="alert">Alert</string>
+    <string name="bluetooth_not_support">This device does not support Bluetooth.</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="bluetooth_on_off">Bluetooth On/Off</string>
+    <string name="discoverable_on_off">Discoverable On/Off</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="bluetooth_discoverable">Discoverable</string>
+    <string name="scan">Scan</string>
+    <string name="pair">Pair</string>
+    <string name="unpair">Unpair</string>
+    <string name="connect">Connect</string>
+    <string name="send">Send</string>
+    <string name="selected_device">Selected device: </string>
+    <string name="pairing_state">Pairing State: </string>
+    <string name="connection_state">Connection State: </string>
+    <string name="input_message">Input message</string>
+    <string name="no_device_selected">No bluetooth device is selected</string>
+    <string name="bond_bonding">Bonding...</string>
+    <string name="bond_bonded">Bonded</string>
+    <string name="bond_none">Not Bonded</string>
+    <string name="received_message">Received Message</string>
+    <string name="tag_incoming_message">INCOMING_MESSAGE</string>
+    <string name="tag_connection_finished">CONNECTION_FINISHED</string>
+    <string name="tag_message">MESSAGE</string>
+    <string name="tag_connection_succeed">1</string>
+    <string name="tag_connection_failed">0</string>
+    <string name="message">Message</string>
+    <string name="connecting">Connecting</string>
+    <string name="connected">Connected</string>
+    <string name="not_connected">Not connected</string>
+</resources>
