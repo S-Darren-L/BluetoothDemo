@@ -1,5 +1,7 @@
 package com.darren.android.bluetoothdemo.ViewModel;
 
+import android.content.Context;
+
 import com.darren.android.bluetoothdemo.Services.BluetoothService;
 import com.darren.android.bluetoothdemo.Services.MainService;
 
@@ -10,12 +12,12 @@ import com.darren.android.bluetoothdemo.Services.MainService;
 public class MessageViewModel {
     private static final String TAG = "MessageViewModel";
 
+    private Context context;
     private BluetoothService bluetoothService;
-    private MainService mainService;
 
-    public MessageViewModel() {
-        mainService = MainService.getMainService();
-        this.bluetoothService = mainService.getBluetoothService();
+    public MessageViewModel(Context context) {
+        this.context = context;
+        this.bluetoothService = MainService.getMainService().getBluetoothService(context);
     }
 
     public void bluetoothMessageWrite(byte[] bytes) {

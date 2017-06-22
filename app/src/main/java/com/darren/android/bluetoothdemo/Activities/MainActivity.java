@@ -1,12 +1,10 @@
 package com.darren.android.bluetoothdemo.Activities;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
@@ -23,6 +21,7 @@ import android.widget.TextView;
 
 import com.darren.android.bluetoothdemo.Adapters.DeviceListAdapter;
 import com.darren.android.bluetoothdemo.R;
+import com.darren.android.bluetoothdemo.Utils.Utils;
 import com.darren.android.bluetoothdemo.ViewModel.MainViewModel;
 
 import butterknife.BindView;
@@ -73,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
     ListView newDevicesListView;
     @BindView(R.id.startMessagingButton)
     Button startMessagingButton;
+    @BindView(R.id.startBLEScanButton)
+    Button startBLEScanButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        mainViewModel = new MainViewModel(this);
+        mainViewModel = new MainViewModel(getApplicationContext());
 
         isBluetoothEnabled = checkBluetoothStatus();
 
@@ -89,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
 
         mainViewModel.setFoundDeviceListAdapter(new DeviceListAdapter(this, R.layout.layout_device_item, mainViewModel.getFoundBtDevices()));
         newDevicesListView.setAdapter(mainViewModel.getFoundDeviceListAdapter());
-        if(isBluetoothEnabled)
-            mainViewModel.findPairedDevices();
+
+        setBluetoothStateUI(isBluetoothEnabled);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(connectionFinishedReceiver, new IntentFilter(getString(R.string.tag_connection_finished)));
     }
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             registerReceiver(bondStateChangedReceiver, mainViewModel.getBondStateChangedFilter());
         }
         else {
-            showAlertDialog(getString(R.string.no_device_selected));
+            Utils.showAlertDialog(getString(R.string.no_device_selected), getApplicationContext());
         }
     }
 
@@ -163,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                 setPairingStateLabelText(getString(R.string.bond_none));
         }
         else {
-            showAlertDialog(getString(R.string.no_device_selected));
+            Utils.showAlertDialog(getString(R.string.no_device_selected), getApplicationContext());
         }
     }
 
@@ -174,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
             deviceConnectionStateTV.setText(getString(R.string.connecting));
             mainViewModel.connectBluetoothDevice();
         } else {
-            showAlertDialog(getString(R.string.no_device_selected));
+            Utils.showAlertDialog(getString(R.string.no_device_selected), getApplicationContext());
         }
     }
 
@@ -182,6 +183,12 @@ public class MainActivity extends AppCompatActivity {
     public void onStartMessagingClicked() {
         Intent startMessageActivityIntent = new Intent(this, MessageActivity.class);
         startActivity(startMessageActivityIntent);
+    }
+
+    @OnClick(R.id.startBLEScanButton)
+    public void onStartBLEScanClicked() {
+        Intent startBLEScanActivityIntent = new Intent(this, BLEScanActivity.class);
+        startActivity(startBLEScanActivityIntent);
     }
 
     private void checkBluetoothPermission() {
@@ -199,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkBluetoothStatus() {
         if (!mainViewModel.isBluetoothAvailable()) {
             // Device does not support Bluetooth
-            showAlertDialog(getString(R.string.bluetooth_not_support));
+            Utils.showAlertDialog(getString(R.string.bluetooth_not_support), getApplicationContext());
             return false;
         } else {
             if(mainViewModel.isBluetoothEnabled()) {
@@ -219,19 +226,37 @@ public class MainActivity extends AppCompatActivity {
         devicePairingStateTV.setText(state);
     }
 
-    private void showAlertDialog(String message) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setTitle(R.string.alert);
-        dialogBuilder.setMessage(message);
-        dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = dialogBuilder.create();
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+    private void setBondStateUI(int bondState) {
+        switch (bondState) {
+            case BluetoothDevice.BOND_BONDING:
+                Log.d(TAG, "bondStateChangedReceiver: BOND_BONDING");
+                setPairingStateLabelText(getString(R.string.bond_bonding));
+                break;
+            case BluetoothDevice.BOND_BONDED:
+                Log.d(TAG, "bondStateChangedReceiver: BOND_BONDED");
+                setPairingStateLabelText(getString(R.string.bond_bonded));
+                indeterminateBar.setVisibility(View.GONE);
+                break;
+            case BluetoothDevice.BOND_NONE:
+                Log.d(TAG, "bondStateChangedReceiver: BOND_NONE");
+                setPairingStateLabelText(getString(R.string.bond_none));
+                indeterminateBar.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    private void setBluetoothStateUI(boolean isBluetoothEnabled) {
+        if(isBluetoothEnabled) {
+            mainViewModel.findPairedDevices();
+            blueToothEnableSwitch.setText(getString(R.string.on));
+            startMessagingButton.setEnabled(true);
+            startBLEScanButton.setEnabled(true);
+        } else {
+            blueToothEnableSwitch.setText(getString(R.string.off));
+            startMessagingButton.setEnabled(false);
+            startBLEScanButton.setEnabled(false);
+        }
+
     }
 
     // Broadcast receiver for ACTION_STATE_CHANGED
@@ -260,12 +285,7 @@ public class MainActivity extends AppCompatActivity {
                         isBluetoothEnabled = false;
                         break;
                 }
-
-                if(isBluetoothEnabled) {
-                    mainViewModel.findPairedDevices();
-                    blueToothEnableSwitch.setText(getString(R.string.on));
-                } else
-                    blueToothEnableSwitch.setText(getString(R.string.off));
+                setBluetoothStateUI(isBluetoothEnabled);
             }
         }
     };
@@ -325,25 +345,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void setBondStateUI(int bondState) {
-        switch (bondState) {
-        case BluetoothDevice.BOND_BONDING:
-            Log.d(TAG, "bondStateChangedReceiver: BOND_BONDING");
-            setPairingStateLabelText(getString(R.string.bond_bonding));
-            break;
-        case BluetoothDevice.BOND_BONDED:
-            Log.d(TAG, "bondStateChangedReceiver: BOND_BONDED");
-            setPairingStateLabelText(getString(R.string.bond_bonded));
-            indeterminateBar.setVisibility(View.GONE);
-            break;
-        case BluetoothDevice.BOND_NONE:
-            Log.d(TAG, "bondStateChangedReceiver: BOND_NONE");
-            setPairingStateLabelText(getString(R.string.bond_none));
-            indeterminateBar.setVisibility(View.GONE);
-            break;
-        }
-    }
-
     // Broadcast receiver for bluetooth connection finished
     private final BroadcastReceiver connectionFinishedReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -351,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
             indeterminateBar.setVisibility(View.GONE);
 
             String connectionResult = intent.getStringExtra(getString(R.string.tag_connection_finished));
-            if(connectionResult == getString(R.string.tag_connection_succeed))
+            if(connectionResult.equals(getString(R.string.tag_connection_succeed)))
                 deviceConnectionStateTV.setText(getString(R.string.connected));
             else
                 deviceConnectionStateTV.setText(getString(R.string.not_connected));

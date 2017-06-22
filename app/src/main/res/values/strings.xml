@@ -10,6 +10,8 @@
     <string name="off">Off</string>
     <string name="bluetooth_discoverable">Discoverable</string>
     <string name="scan">Scan</string>
+    <string name="start_scan">Start scan</string>
+    <string name="stop_scan">Stop scan</string>
     <string name="pair">Pair</string>
     <string name="unpair">Unpair</string>
     <string name="connect">Connect</string>
@@ -32,4 +34,6 @@
     <string name="connecting">Connecting</string>
     <string name="connected">Connected</string>
     <string name="not_connected">Not connected</string>
+    <string name="ble">BLE</string>
+    <string name="no_ble_support">BLE is not supported on the device</string>
 </resources>

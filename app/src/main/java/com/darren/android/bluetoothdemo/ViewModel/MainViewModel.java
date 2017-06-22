@@ -18,7 +18,6 @@ import java.util.ArrayList;
 public class MainViewModel {
     private static final String TAG = "MainViewModel";
 
-    private MainService mainService;
     private BluetoothService bluetoothService;
     private ArrayList<BluetoothDevice> pairedBtDevices;
     private ArrayList<BluetoothDevice> foundBtDevices;
@@ -27,9 +26,7 @@ public class MainViewModel {
     private BluetoothDevice selectedBluetoothDevice;
 
     public MainViewModel(Context context) {
-        mainService = MainService.getMainService();
-        mainService.init(context);
-        this.bluetoothService = mainService.getBluetoothService();
+        this.bluetoothService = MainService.getMainService().getBluetoothService(context);
         this.pairedBtDevices = new ArrayList<>();
         this.foundBtDevices = new ArrayList<>();
     }
@@ -94,7 +91,7 @@ public class MainViewModel {
     }
 
     public String getSelectedDeviceName() {
-        return selectedBluetoothDevice.getName();
+        return selectedBluetoothDevice ==  null ? "" : selectedBluetoothDevice.getName();
     }
 
     public void disableBluetooth() {

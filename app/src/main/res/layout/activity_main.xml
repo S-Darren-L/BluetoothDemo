@@ -96,7 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/scan"/>
+                    android:text="@string/start_scan"/>
 
             </LinearLayout>
 
@@ -200,7 +200,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/message"/>
+                    android:text="@string/message"
+                    android:enabled="false"/>
+
+                <Button
+                    android:id="@+id/startBLEScanButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/ble"
+                    android:enabled="false"/>
 
             </LinearLayout>
 

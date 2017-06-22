@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.darren.android.bluetoothdemo.R;
-import com.darren.android.bluetoothdemo.Services.MainService;
 import com.darren.android.bluetoothdemo.ViewModel.MessageViewModel;
 
 import java.nio.charset.Charset;
@@ -25,7 +24,6 @@ import butterknife.OnClick;
 public class MessageActivity extends AppCompatActivity {
     private static final String TAG = "MessageActivity";
 
-    private MainService mainService;
     private MessageViewModel messageViewModel;
 
     private StringBuilder message;
@@ -43,7 +41,7 @@ public class MessageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_message);
         ButterKnife.bind(this);
 
-        messageViewModel = new MessageViewModel();
+        messageViewModel = new MessageViewModel(getApplicationContext());
 
         message = new StringBuilder();
         LocalBroadcastManager.getInstance(this).registerReceiver(incomingMessageReceiver, new IntentFilter(getString(R.string.tag_incoming_message)));
